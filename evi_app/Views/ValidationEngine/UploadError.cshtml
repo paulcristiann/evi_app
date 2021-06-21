@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Certificate upload status";
+}
+
+<h1>Certificate pool update result</h1>
+<hr />
+
+<div>
+    @if (ViewBag.errors.Count != 0)
+    {
+        <h5>Some files could not be uploaded</h5>
+        <p>Please make sure you respect the format - 10 digits with pem extension</p>
+        foreach (var e in ViewBag.errors)
+        {
+            <h7 style="color:red">@e</h7>
+        }
+    }
+    <br /><br />
+    @if (ViewBag.valids.Count != 0)
+    {
+        <h5>Valid files</h5>
+        <p>These files were uploaded</p>
+        foreach (var v in ViewBag.valids)
+        {
+            <h7 style="color:green">@v</h7>
+            <br />
+        }
+    }
+</div>

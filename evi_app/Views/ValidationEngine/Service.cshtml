@@ -1,0 +1,119 @@
+﻿@{
+    ViewData["Title"] = "Profile service";
+}
+
+<h1>Profile management page</h1>
+<hr />
+
+<div>
+    <h4>ANAF Server certificate</h4>
+    <a class="btn btn-primary" href="/files/anaf.crt">Descarca certificatul</a>
+</div>
+<hr />
+
+<div>
+    <h4>Genereaza profile</h4>
+    <div class="btn-group">
+        <a href="#profil0Modal" data-toggle="modal" class="btn btn-primary">Profil 0</a>
+        <a href="#profil1Modal" data-toggle="modal" class="btn btn-primary">Profil 1</a>
+        <a href="#profilRModal" data-toggle="modal" class="btn btn-primary">Profil Reset</a>
+    </div>
+</div>
+<hr />
+
+<div id="profil0Modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-controller="ValidationEngine" asp-action="DownloadProfile0">
+                <div class="modal-header">
+                    <h4 class="modal-title">Genereaza profil 0</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Serie fiscala (NUI)</label>
+                        <input type="text" class="form-control" required="required" name="nui" />
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Destinatie AMEF</label>
+                        <select class="form-control m-b-20 undefined" name="destAmef">
+                            <option value="1">AMEF uzual</option>
+                            <option value="2">AMEF schimb valutar</option>
+                            <option value="3">AMEF taxi</option>
+                            <option value="4">AMEF aeroporturi</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel" />
+                    <input type="Submit" class="btn btn-info" value="Download" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="profil1Modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-controller="ValidationEngine" asp-action="DownloadProfile1">
+                <div class="modal-header">
+                    <h4 class="modal-title">Genereaza profil 1</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Serie fiscala (NUI)</label>
+                        <input type="text" class="form-control" required="required" name="nui" />
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Numar minute reconectare</label>
+                        <input type="text" class="form-control" required="required" name="nrminute" />
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Destinatie AMEF</label>
+                        <select class="form-control m-b-20 undefined" name="destAmef">
+                            <option value="1">AMEF uzual</option>
+                            <option value="2">AMEF schimb valutar</option>
+                            <option value="3">AMEF taxi</option>
+                            <option value="4">AMEF aeroporturi</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel" />
+                    <input type="Submit" class="btn btn-info" value="Download" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="profilRModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-controller="ValidationEngine" asp-action="DownloadProfileR">
+                <div class="modal-header">
+                    <h4 class="modal-title">Genereaza profil reset</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Data</label>
+                        <input class="form-control" type="datetime-local" value="Data de start mReset" name="data">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel" />
+                    <input type="Submit" class="btn btn-info" value="Download" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

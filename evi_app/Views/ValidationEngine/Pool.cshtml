@@ -1,0 +1,44 @@
+﻿@model IEnumerable<evi_app.Models.UploadedCertificate>
+@{
+    ViewData["Title"] = "Certificate pool management";
+}
+
+<h1>Manage the pool of certificates</h1>
+<hr />
+
+<div>
+    <h4>Upload a new certificate</h4>
+    <section>
+        <form method="post" enctype="multipart/form-data" asp-controller="ValidationEngine" asp-action="UploadCertificate">
+            <div class="form-group">
+                <div class="col-md-10">
+                    <input type="file" name="certificates" multiple />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-10">
+                    <input type="submit" value="Upload" />
+                </div>
+            </div>
+        </form>
+    </section>
+    @if (ViewBag.valids != null)
+    {
+        @foreach (var v in ViewBag.valids)
+        {
+            <p style="color:green">@v</p>
+            <br />
+        }
+    }
+    <p style="color:red">@ViewBag.error</p>
+</div>
+
+<div>
+    <h4>Current pool</h4>
+    <ul class="list-group">
+        @foreach (var c in Model)
+        {
+            <li class="list-group-item"><a href="#"><b>@c.FileName</b></a> | <i>uploaded on @c.Timestamp</i> | <a href="/ValidationEngine/RemoveCert?file_name=@c.FileName" style="color:red;align-content:end" >Delete</a></li>
+        }
+    </ul>
+</div>

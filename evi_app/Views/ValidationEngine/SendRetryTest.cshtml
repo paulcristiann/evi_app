@@ -1,0 +1,95 @@
+﻿@{
+    ViewData["Title"] = "Live Feed";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-6">
+            <h1>Message retry test</h1>
+        </div>
+        <div class="col-xs-6">
+            <div class="gps_ring"></div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <h4 id="connection_status"></h4>
+    <h5>Fiscal number: @ViewBag.fiscal_number</h5>
+    <h5>Number of minutes expected (between messages): @ViewBag.nr_m</h5>
+    <input type="hidden" value="@ViewBag.nr_m" id="nr_m" />
+    <input type="hidden" value="@ViewBag.fiscal_number" id="fiscal_number" />
+</div>
+<hr />
+
+<div>
+    <div class="row justify-content-around">
+        <div class="col-md-5" id="message_content">
+            <h2>Messages</h2><hr />
+            <div class="card rounded" id="message_template">
+                <div class="row ">
+                    <div class="col-md-12 px-3">
+                        <div class="card-block px-3">
+                            <h4 class="card-title" id="title">No messages yet</h4>
+                            <h4 class="card-title" id="fiscal-number" style="display:none">No messages yes</h4>
+                            <h6 class="card-title" id="date" style="display:none">No messages yes</h6>
+                            <h6 class="card-title" id="tester" style="display:none">No messages yes</h6>
+                            <p class="card-text" id="content">All the incoming traffic will be displayed here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5" id="lap_content">
+            <h2>Telemetry data</h2><hr />
+            <div class="card">
+                <div class="card-body">
+                    <h4>Time from last message</h4>
+                    <h5 id="timer">00:00:00</h5>
+                </div>
+            </div><br />
+
+            <div class="card rounded" id="lap_template">
+                <div class="row ">
+                    <div class="col-md-12 px-3">
+                        <div class="card-block px-3">
+                            <h4 class="card-title" id="title">No laps yet</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/sendretry.js"></script>
+
+<style>
+    .gps_ring {
+        border: 3px solid #999;
+        -webkit-border-radius: 30px;
+        height: 50px;
+        width: 50px;
+        margin-left: 20px;
+        -webkit-animation: pulsate 1s ease-out;
+        -webkit-animation-iteration-count: infinite;
+        opacity: 0.0
+    }
+
+    @@-webkit-keyframes pulsate {
+        0% {
+            -webkit-transform: scale(0.1, 0.1);
+            opacity: 0.0;
+        }
+
+        50% {
+            opacity: 1.0;
+        }
+
+        100% {
+            -webkit-transform: scale(1.2, 1.2);
+            opacity: 0.0;
+        }
+    }
+</style>

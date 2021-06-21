@@ -1,0 +1,112 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Dashboard</h1>
+</div>
+<br />
+<div class="row mb-3">
+    <div class="col-xl-3 col-sm-6 py-2">
+        <a asp-action="Service" asp-controller="ValidationEngine" style="text-decoration:none">
+            <div class="card bg-light text-dark h-100">
+                <div class="card-body bg-light">
+                    <div class="rotate">
+                        <i class="fa fa-list"></i>
+                    </div>
+                    <h6 class="text-uppercase">Generate profiles</h6>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-xl-3 col-sm-6 py-2">
+        <a asp-action="Pool" asp-controller="ValidationEngine" style="text-decoration:none">
+            <div class="card bg-light text-dark h-100">
+                <div class="card-body bg-light">
+                    <div class="rotate">
+                        <i class="fa fa-certificate"></i>
+                    </div>
+                    <h6 class="text-uppercase">Certificate Pool</h6>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-xl-3 col-sm-6 py-2">
+        <a asp-action="LiveFeed" asp-controller="ValidationEngine" style="text-decoration:none">
+            <div class="card text-dark bg-light h-100">
+                <div class="card-body bg-light">
+                    <div class="rotate">
+                        <i class="fa fa-stream"></i>
+                    </div>
+                    <h6 class="text-uppercase">Live feed</h6>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-xl-3 col-sm-6 py-2">
+        <a id="test_nr_m" href="#StartQuickTestModal" data-toggle="modal" style="text-decoration:none">
+            <div class="card text-dark bg-light h-100">
+                <div class="card-body bg-light">
+                    <div class="rotate">
+                        <i class="fa fa-calendar-check"></i>
+                    </div>
+                    <h6 class="text-uppercase">NrM Test</h6>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+<br />
+<br />
+<div>
+    <h2>Browse the messages archive</h2>
+    <form asp-action="Index" asp-controller="ValidationEngine">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Search by fiscal id or username" name="SearchString" value="@ViewData["CurrentFilter"]">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit">Search</button>
+            </div>
+        </div>
+    </form>
+</div>
+<br />
+
+<div id="StartQuickTestModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="get" asp-controller="ValidationEngine" asp-action="SendRetryTest">
+                <div class="modal-header">
+                    <h4 class="modal-title">Start NrM test</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Fiscal ID</label>
+                        <input type="text" class="form-control" required="required" name="fiscal_number" />
+                    </div>
+                    <div class="form-group">
+                        <label>NrM Value</label>
+                        <input type="text" class="form-control" required="required" name="nr_m" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel" />
+                    <input type="Submit" class="btn btn-info" value="Start test" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal hide" id="ShowXmlModal">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal">×</button>
+        <h3>Received XML Data</h3>
+    </div>
+    <div class="modal-body">
+        <p id="xml" name="xml">some content</p>
+    </div>
+</div>
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/dashboard.js"></script>

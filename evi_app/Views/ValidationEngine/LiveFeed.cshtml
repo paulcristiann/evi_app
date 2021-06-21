@@ -1,0 +1,85 @@
+﻿@{
+    ViewData["Title"] = "Live Feed";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-6">
+            <h1>Messages Live Feed</h1>
+        </div>
+        <div class="col-xs-6">
+            <div class="gps_ring"></div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <h4 id="connection_status"></h4>
+    <h5>Filters</h5>
+    <input type="checkbox" data-toggle="switchbutton" data-size="sm" id="switch-event">
+
+    <br />
+
+    <div id="filters_section" style="display:none">
+        <input type="text" id="filter_box" placeholder="Filter by fiscal id" /><button id="filter_button">Apply</button>
+        <p id="filters"></p>
+    </div>
+
+</div>
+
+<br />
+
+<h4>Messages list</h4>
+
+<br />
+
+<div id="content">
+
+    <div class="card rounded" id="template">
+        <div class="row ">
+            <div class="col-md-12 px-3">
+                <div class="card-block px-3">
+                    <h4 class="card-title" id="title">No messages yet</h4>
+                    <h4 class="card-title" id="fiscal-number" style="display:none">No messages yes</h4>
+                    <h6 class="card-title" id="date" style="display:none">No messages yes</h6>
+                    <h6 class="card-title" id="tester" style="display:none">No messages yes</h6>
+                    <p class="card-text" id="content">All the incoming traffic will be displayed here.</p>
+                    <a href="#" class="btn btn-link" style="display:none" id="button" target="_blank">Open in a new tab to analyze > (Not implemented yet)</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/livefeed.js"></script>
+
+<style>
+    .gps_ring {
+        border: 3px solid #999;
+        -webkit-border-radius: 30px;
+        height: 50px;
+        width: 50px;
+        margin-left: 20px;
+        -webkit-animation: pulsate 1s ease-out;
+        -webkit-animation-iteration-count: infinite;
+        opacity: 0.0
+    }
+
+    @@-webkit-keyframes pulsate {
+        0% {
+            -webkit-transform: scale(0.1, 0.1);
+            opacity: 0.0;
+        }
+
+        50% {
+            opacity: 1.0;
+        }
+
+        100% {
+            -webkit-transform: scale(1.2, 1.2);
+            opacity: 0.0;
+        }
+    }
+</style>
