@@ -36,9 +36,13 @@
 <div>
     <h4>Current pool</h4>
     <ul class="list-group">
+        @if (Model.Count() == 0)
+        {
+            <p>The certificate pool is empty</p>
+        }
         @foreach (var c in Model)
         {
-            <li class="list-group-item"><a href="#"><b>@c.FileName</b></a> | <i>uploaded on @c.Timestamp</i> | <a href="/ValidationEngine/RemoveCert?file_name=@c.FileName" style="color:red;align-content:end" >Delete</a></li>
+            <li class="list-group-item"><a href="#"><b>@c.FileName</b></a> | <i>uploaded on @c.Timestamp</i> | <a href="/ValidationEngine/RemoveCert?file_name=@c.FileName" style="color:red;align-content:end">Delete</a></li>
         }
     </ul>
 </div>

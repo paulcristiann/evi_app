@@ -16,7 +16,7 @@ using Microsoft.Extensions.Logging;
 
 namespace evi_app.Areas.Identity.Pages.Account
 {
-    [AllowAnonymous]
+    [Authorize]
     public class ExternalLoginModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;

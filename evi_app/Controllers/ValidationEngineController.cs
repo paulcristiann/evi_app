@@ -123,7 +123,7 @@ namespace EVI_App.Controllers
                         errors.Add($"The file {cert.FileName} does not respect the format xxxxxxxxxx.pem");
                         continue;
                     }
-                  
+
                     var filePath = Path.Combine(basePath, cert.FileName);
                     filePaths.Add(filePath);
                     using (var stream = new FileStream(filePath, FileMode.Create))
@@ -148,6 +148,7 @@ namespace EVI_App.Controllers
                     var result = client.PostAsync(endpoint, content);
                     if (result.Result.IsSuccessStatusCode)
                     {
+
                         var file_model = new UploadedCertificate
                         {
                             UserId = user_id,
@@ -166,6 +167,7 @@ namespace EVI_App.Controllers
                         }
                         await _context.UploadedCertificates.AddAsync(file_model);
                         valids.Add($"The file {cert.FileName} was added to the pool");
+
                     }
                     else
                     {
@@ -175,18 +177,44 @@ namespace EVI_App.Controllers
                     }
                 }
             }
-
             if (hasErrors)
             {
                 //We had errors with one of the files
                 ViewBag.error = "We had errors with one of the files. Please make sure you have 10 digits and .pem";
-                await _context.SaveChangesAsync();
 
-                return RedirectToAction("UploadError", "ValidationEngine", new { errors = errors, valids = valids});
+                if(valids.Count > 0)
+                {
+                    //Send the refresh pool signal
+                    var refresh_endpoint = $"http://193.230.14.53:9000/hooks/refresh-pool";
+                    var refresh_client = new HttpClient();
+                    var refresh_result = refresh_client.GetAsync(refresh_endpoint);
+                    if (refresh_result.Result.IsSuccessStatusCode)
+                    {
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        ViewBag.refresh_error = "There was a problem refreshing the pool in the server. The certificates were not uploaded.";
+                    }
+                }
+
+                return RedirectToAction("UploadError", "ValidationEngine", new { errors = errors, valids = valids });
             }
             else
             {
-                await _context.SaveChangesAsync();
+                //Send the refresh pool signal
+                var refresh_endpoint = $"http://193.230.14.53:9000/hooks/refresh-pool";
+                var refresh_client = new HttpClient();
+                var refresh_result = refresh_client.GetAsync(refresh_endpoint);
+                if (refresh_result.Result.IsSuccessStatusCode)
+                {
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    ViewBag.refresh_error = "There was a problem refreshing the pool in the server. The certificates were not uploaded.";
+                    return RedirectToAction("UploadError", "ValidationEngine", new { errors = errors, valids = valids });
+                }
                 return RedirectToAction("Pool", "ValidationEngine", new { valids = valids });
             }
         }
@@ -197,7 +225,7 @@ namespace EVI_App.Controllers
 
             var certificate = _context.UploadedCertificates.Where(x => x.UserId == current_user_id && x.FileName == file_name).FirstOrDefault();
 
-            if(certificate == null)
+            if (certificate == null)
             {
                 return RedirectToAction("Pool", "ValidationEngine");
             }
@@ -209,18 +237,41 @@ namespace EVI_App.Controllers
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
-                //Remove from EVI
-                System.IO.File.Delete(certificate.FilePath);
-                _context.UploadedCertificates.Remove(certificate);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Pool", "ValidationEngine");
+                //Send the refresh pool signal
+                var refresh_endpoint = $"http://193.230.14.53:9000/hooks/refresh-pool";
+                var refresh_client = new HttpClient();
+                var refresh_result = refresh_client.GetAsync(refresh_endpoint);
+                if (refresh_result.Result.IsSuccessStatusCode)
+                {
+                    //Remove from EVI
+                    System.IO.File.Delete(certificate.FilePath);
+                    _context.UploadedCertificates.Remove(certificate);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Pool", "ValidationEngine");
+                }
+                else
+                {
+                    return RedirectToAction("Pool", "ValidationEngine", new { error = "The pool could not be refreshed." });
+                }
             }
             return RedirectToAction("Pool", "ValidationEngine", new { error = "The file could not be deleted" });
+        }
+
+        public IActionResult WrongInput(string error)
+        {
+            ViewBag.error = error;
+            return View();
         }
 
         [HttpPost]
         public async Task<ActionResult> DownloadProfile0(string nui, string destAmef)
         {
+            //Validate NUI on backend
+            if(!Regex.IsMatch(nui, @"^\d{10}$"))
+            {
+                return RedirectToAction("WrongInput", "ValidationEngine", new { error = "The fiscal number must be a 10 digit number." });
+            }
+
             var user_evi_id = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var user_corespondence_object = _context.UserCorespondence.Where(x => x.EviId == user_evi_id).FirstOrDefault();
@@ -247,6 +298,12 @@ namespace EVI_App.Controllers
         [HttpPost]
         public async Task<ActionResult> DownloadProfile1(string nui, string nrminute, string destAmef)
         {
+            //Validate NUI on backend
+            if (!Regex.IsMatch(nui, @"^\d{10}$"))
+            {
+                return RedirectToAction("WrongInput", "ValidationEngine", new { error = "The fiscal number must be a 10 digit number." });
+            }
+
             var user_evi_id = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var user_corespondence_object = _context.UserCorespondence.Where(x => x.EviId == user_evi_id).FirstOrDefault();
@@ -273,6 +330,12 @@ namespace EVI_App.Controllers
         [HttpPost]
         public async Task<ActionResult> DownloadProfileR(string data)
         {
+            //Validate data on backend
+            if (data == null)
+            {
+                return RedirectToAction("WrongInput", "ValidationEngine", new { error = "The data must not be null" });
+            }
+
             var user_evi_id = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var user_corespondence_object = _context.UserCorespondence.Where(x => x.EviId == user_evi_id).FirstOrDefault();
@@ -296,27 +359,6 @@ namespace EVI_App.Controllers
             return NotFound();
         }
 
-        //public async Task<IActionResult> UploadCertificate(IFormFile certificat)
-        //{
-
-        //    if (certificat.Length > 0)
-        //    {
-        //        var filePath = Path.GetTempFileName();
-
-        //        using (var stream = System.IO.File.Create(filePath))
-        //        {
-        //            await certificat.CopyToAsync(stream);
-        //            var endpoint = $"http://193.230.14.53:4000/api/upload";
-        //            var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
-        //            await request.Content.CopyToAsync(stream);
-        //            var client = _clientFactory.CreateClient();
-        //            var response = await client.SendAsync(request);
-        //        }
-        //    }
-
-        //    return View();
-        //}
-
         public IActionResult LiveFeed()
         {
             return View();
@@ -324,6 +366,29 @@ namespace EVI_App.Controllers
 
         public IActionResult SendRetryTest(string fiscal_number, int nr_m)
         {
+            bool wrong_fiscal_id = false;
+            bool wrong_number = false;
+
+            //Validate NUI on backend
+            if (!Regex.IsMatch(fiscal_number, @"^\d{10}$"))
+            {
+                wrong_fiscal_id = true;
+            }
+            if(nr_m <= 0)
+            {
+                wrong_number = true;
+            }
+
+            if(wrong_fiscal_id || wrong_number)
+            {
+                if(wrong_fiscal_id && !wrong_number)
+                    return RedirectToAction("WrongInput", "ValidationEngine", new { error = "The fiscal number must be a 10 digit number." });
+                if (wrong_fiscal_id && wrong_number)
+                    return RedirectToAction("WrongInput", "ValidationEngine", new { error = "The fiscal number must be a 10 digit number. The nrM value must be a positive integer" });
+                if (!wrong_fiscal_id && wrong_number)
+                    return RedirectToAction("WrongInput", "ValidationEngine", new { error = "The nrM value must be a positive integer" });
+            }
+
             ViewBag.fiscal_number = fiscal_number;
             ViewBag.nr_m = nr_m;
             return View();

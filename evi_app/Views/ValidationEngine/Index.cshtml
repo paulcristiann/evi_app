@@ -44,7 +44,7 @@
             <h5 class="card-title">Sent by user: @item.UserId</h5>
             <h5 class="card-title">XML payload - <a class="btn btn-link" onclick="show_payload(@item.Id)" id="show_button">Show</a></h5>
             <div id="@item.Id" style="display:none">
-                <p class="card-text">@item.Xml</p>
+                <p class="card-text">@System.Web.HttpUtility.HtmlDecode(@item.Xml)</p>
                 <br />
             </div>
             <a href="#" class="btn btn-primary">Analyze message</a>

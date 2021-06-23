@@ -31,12 +31,13 @@ namespace EVI_App.Controllers
         [HttpPost]
         public async Task<ActionResult<Message>> PostMessage(Message message)
         {
-            message.Timestamp = DateTime.Now;
-            _context.MessagesItems.Add(message);
-            await _context.SaveChangesAsync();
-
             var evi_user_id = _context.UserCorespondence.Where(x => x.SavtaId == message.UserId).First().EviId;
             var evi_username = _context.Users.Where(x => x.Id == evi_user_id).First().Email;
+
+            message.Timestamp = DateTime.Now;
+            message.UserId = evi_username;
+            _context.MessagesItems.Add(message);
+            await _context.SaveChangesAsync();
 
             //Send to the signalr hub
             await _hubContext.Clients.All.SendAsync("ReceiveMessage", evi_username, message.Xml, message.FiscalTaxId);
